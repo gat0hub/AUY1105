@@ -1,0 +1,48 @@
+name: "Terraform CI - Análisis y Validación"
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  terraform_quality_and_security:
+    name: "Calidad, Seguridad y Validación"
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Clonar el repositorio
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      # Configurar Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      # Configurar TFLint
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: latest
+
+      # ETAPA 1: Análisis Estático (TFLint)
+      - name: Ejecutar TFLint
+        run: |
+          tflint --init
+          tflint
+
+      # ETAPA 2: Análisis de Seguridad (Checkov)
+      - name: Ejecutar Checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: .
+          framework: terraform
+          soft_fail: true # Ponlo en 'false' si quieres que el pipeline falle ante errores graves
+
+      # Inicializar Terraform (Requerido para el validate)
+      - name: Terraform Init
+        run: terraform init -backend=false
+
+      # ETAPA 3: Validación Terraform
+      - name: Terraform Validate
+        run: terraform validate
