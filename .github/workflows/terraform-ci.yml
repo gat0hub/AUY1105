@@ -1,4 +1,4 @@
-name: "Terraform CI - Análisis"
+name: Terraform CI
 
 on:
   pull_request:
@@ -6,33 +6,33 @@ on:
       - main
 
 jobs:
-  terraform_analysis:
-    name: "Validar Terraform"
+  terraform:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      
-      - uses: hashicorp/setup-terraform@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: Setup TFLint
-        uses: terraform-linters/setup-tflint@v4
-        with:
-          tflint_version: latest
-
-      - name: ETAPA 1 - TFLint
-        run: |
-          tflint --init
-          tflint
-
-      - name: ETAPA 2 - Checkov
-        uses: bridgecrewio/checkov-action@master
-        with:
-          directory: .
-          framework: terraform
-          soft_fail: true
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
 
       - name: Terraform Init
-        run: terraform init -backend=false
+        run: terraform init
 
-      - name: ETAPA 3 - Terraform Validate
+      # 1. TFLint
+      - name: Run TFLint
+        uses: terraform-linters/setup-tflint@v3
+
+      - name: TFLint Init
+        run: tflint --init
+
+      - name: TFLint Run
+        run: tflint
+
+      # 2. Checkov
+      - name: Run Checkov
+        uses: bridgecrewio/checkov-action@master
+
+      # 3. Validate
+      - name: Terraform Validate
         run: terraform validate
