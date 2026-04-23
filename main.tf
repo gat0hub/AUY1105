@@ -28,8 +28,6 @@ resource "aws_security_group" "allow_ssh" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    # OJO: Se usa una IP privada ficticia en lugar de 0.0.0.0/0 
-    # para cumplir por defecto con tu politica OPA del Paso 4.
     cidr_blocks = ["192.168.1.100/32"] 
   }
 
