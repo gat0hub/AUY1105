@@ -1,0 +1,18 @@
+# Directorios locales de Terraform
+**/.terraform/*
+.terraform/
+
+# Archivos de estado de Terraform (NUNCA se deben subir)
+*.tfstate
+*.tfstate.*
+
+# Archivos de variables que podrían contener credenciales
+*.tfvars
+*.tfvars.json
+
+# Claves privadas y secretos
+*.pem
+*.key
+*.rsa
+secrets.json
+credentials.csv
